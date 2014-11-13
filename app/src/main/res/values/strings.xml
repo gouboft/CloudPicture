@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">TestService</string>
+    <string name="app_name">网拍</string>
 
-    <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="menu_settings">设置</string>
+    <string name="title_activity_main">拍照上传百度云</string>
 
     <string name="local_service_started">服务正在运行中……</string>
     <string name="local_service_stopped">服务停止了……</string>
     <string name="local_service_label">正在测试中……</string>
-    <string name="bind_service">BindService</string>
-    <string name="unbind_service">unBindService</string>
+    <string name="bind_service">拍照上传</string>
+    <string name="unbind_service">关闭服务</string>
 </resources>
