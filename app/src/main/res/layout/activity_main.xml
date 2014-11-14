@@ -8,8 +8,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="35dp"
         android:onClick="click"
         android:text="@string/bind_service" />
 
@@ -17,8 +15,15 @@
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/button1"
-        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
         android:onClick="click"
-        android:text="@string/unbind_service" />
+        android:text="@string/unbind_service"
+        tools:ignore="RtlHardcoded" />
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+    </WebView>
 </RelativeLayout>
