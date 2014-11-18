@@ -4,17 +4,17 @@ package com.example.link.photo;
  * Created by link on 11/10/14.
  */
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import android.content.Context;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class PhotoHandler implements PictureCallback {
     private static final String TAG = "PhotoHandler";
@@ -56,6 +56,9 @@ public class PhotoHandler implements PictureCallback {
             Toast.makeText(context, "Image could not be saved.",
                     Toast.LENGTH_LONG).show();
         }
+
+
+
     }
 
     private File getDir() {

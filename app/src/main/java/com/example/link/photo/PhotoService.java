@@ -1,19 +1,5 @@
 package com.example.link.photo;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Time;
-import java.util.Date;
-import java.util.Random;
-
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -25,21 +11,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.Camera;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.os.RemoteException;
-import android.util.Base64;
-import android.util.Log;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.webkit.WebView;
-import android.widget.Toast;
 
-import junit.framework.Assert;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
 
 public class PhotoService extends Service {
     private static final String TAG = "LocalService";
@@ -112,6 +88,8 @@ public class PhotoService extends Service {
     @Override
     public void onDestroy() {
         mNM.cancel(NOTIFICATION);
+        if (alarmReceiver != null)
+            unregisterReceiver(alarmReceiver);
 
         if (am != null)
             cancelAlertManager();

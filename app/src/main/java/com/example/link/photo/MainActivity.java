@@ -3,13 +3,14 @@ package com.example.link.photo;
 /**
  * Created by link on 11/10/14.
  */
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +19,7 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -32,11 +34,14 @@ public class MainActivity extends Activity {
     private String str = "Hello";
 
     private boolean mIsBound = false;
-    private final int MSG_AUTH_URL = 10000;
-    private final int MSG_ACCESS_TOKEN = 10001;
-    private NetworkThread networkThread;
 
-    private String tempOauthToken = null;
+    private final int MSG_AUTHORIZE = 10000;
+    private final int MSG_ACCESS_TOKEN = 10001;
+    private final int MSG_OAUTH_FINISH = 10002;
+    private final int MSG_UPLOAD_PICTURE = 10003;
+
+    private OauthThread oauthThread;
+    private boolean passOauth = false;
 
     private DataSave mData;
 
@@ -44,8 +49,14 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+
+
         mData = new DataSave();
+        mData.SetContext(MainActivity.this);
+        if (mData.GetOauthToken() != null && mData.GetOauthTokenSecret() != null)
+            passOauth = true;
 
         myHandler = new MyHandler();
         mWebView = (WebView) findViewById(R.id.webView);
@@ -54,13 +65,17 @@ public class MainActivity extends Activity {
         serviceIntent = new Intent(this, PhotoService.class);
         startService(serviceIntent);
 
-        networkThread = new NetworkThread(true, myHandler, mData);
-        networkThread.start();
+        if (!passOauth) {
+            oauthThread = new OauthThread(true, myHandler, mData);
+            oauthThread.start();
+        }
     }
 
-    public void SetTempOauthToken(String temp) {
-        tempOauthToken = temp;
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
+
     public void click(View v) {
         int key = v.getId();
         switch (key) {
@@ -76,13 +91,13 @@ public class MainActivity extends Activity {
             default:
                 break;
         }
-
     }
 
     private void TakePicture() {
         Intent intent = new Intent();
         intent.setAction("com.example.link.photo");
         sendBroadcast(intent);
+        myHandler.sendEmptyMessage(MSG_UPLOAD_PICTURE);
     }
 
     private void doBindService() {
@@ -146,7 +161,7 @@ public class MainActivity extends Activity {
         public void show(String html) {
             int isExist = html.indexOf("登录并授权成功");
             if (isExist > 0) {
-                networkThread = null;
+                oauthThread = null;
                 myHandler.sendEmptyMessage(MSG_ACCESS_TOKEN);
             }
             Log.d(TAG, "html: " + html);
@@ -161,15 +176,22 @@ public class MainActivity extends Activity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MSG_AUTH_URL:
+                case MSG_AUTHORIZE:
                     mWebView.getSettings().setJavaScriptEnabled(true);
                     mWebView.addJavascriptInterface(new InJavaScriptLocalObj(), "handler");
                     mWebView.setWebViewClient(new MyWebViewClient());
                     mWebView.loadUrl(msg.obj.toString());
                     break;
                 case MSG_ACCESS_TOKEN:
-                    networkThread = new NetworkThread(false, myHandler, mData);
-                    networkThread.start();
+                    oauthThread = new OauthThread(false, myHandler, mData);
+                    oauthThread.start();
+                    break;
+                case MSG_OAUTH_FINISH:
+                    oauthThread = null;
+                    break;
+                case MSG_UPLOAD_PICTURE:
+                    UploadThread uploadThread = new UploadThread(mData);
+                    uploadThread.start();
                     break;
                 default:
                     Log.e(TAG, "Unknown Message!");

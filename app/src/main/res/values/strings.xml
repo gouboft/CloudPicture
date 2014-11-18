@@ -2,7 +2,7 @@
     <string name="app_name">网拍</string>
 
     <string name="menu_settings">设置</string>
-    <string name="title_activity_main">拍照上传百度云</string>
+    <string name="title_activity_main">拍照上传网盘</string>
 
     <string name="local_service_started">服务正在运行中……</string>
     <string name="local_service_stopped">服务停止了……</string>
