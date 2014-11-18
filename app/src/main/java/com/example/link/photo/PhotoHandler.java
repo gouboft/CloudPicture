@@ -19,9 +19,14 @@ import java.util.Date;
 public class PhotoHandler implements PictureCallback {
     private static final String TAG = "PhotoHandler";
     private final Context context;
+    private MainActivity.MyHandler mHandler;
+
+    private final int MSG_UPLOAD_PICTURE = 10003;
 
     public PhotoHandler(Context context) {
         this.context = context;
+        MyApplication mApplication = (MyApplication) context.getApplicationContext();
+        mHandler = mApplication.getHandler();
     }
 
     @Override
@@ -34,10 +39,9 @@ public class PhotoHandler implements PictureCallback {
             Toast.makeText(context, "Can't create directory to save image.",
                     Toast.LENGTH_LONG).show();
             return;
-
         }
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyymmddhhmmss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String date = dateFormat.format(new Date());
         String photoFile = "Picture_" + date + ".jpg";
 
@@ -50,15 +54,11 @@ public class PhotoHandler implements PictureCallback {
             FileOutputStream fos = new FileOutputStream(pictureFile);
             fos.write(data);
             fos.close();
-            Toast.makeText(context, "New Image saved:" + photoFile,
-                    Toast.LENGTH_LONG).show();
-        } catch (Exception error) {
-            Toast.makeText(context, "Image could not be saved.",
-                    Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-
-
+        mHandler.obtainMessage(MSG_UPLOAD_PICTURE, filename).sendToTarget();
     }
 
     private File getDir() {

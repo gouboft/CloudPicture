@@ -30,10 +30,6 @@ public class PhotoService extends Service {
     private int NOTIFICATION = R.string.local_service_started;
 
 
-    /**
-     * Class for clients to access. Because we know this service always runs in
-     * the same process as its clients, we don't need to deal with IPC.
-     */
     public class PhotoBinder extends Binder {
         public PhotoService getService() {
             return PhotoService.this;
@@ -134,9 +130,6 @@ public class PhotoService extends Service {
         intent.setAction("com.vegetables_source.alarm");
         PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, 0);
         am.cancel(pi);
-
-        // 注销广播
-        unregisterReceiver(alarmReceiver);
     }
 
     BroadcastReceiver alarmReceiver = new BroadcastReceiver() {

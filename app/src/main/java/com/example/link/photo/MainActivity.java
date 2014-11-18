@@ -45,7 +45,6 @@ public class MainActivity extends Activity {
 
     private DataSave mData;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +57,10 @@ public class MainActivity extends Activity {
         if (mData.GetOauthToken() != null && mData.GetOauthTokenSecret() != null)
             passOauth = true;
 
+        MyApplication myApp = (MyApplication) getApplication();
         myHandler = new MyHandler();
+        myApp.setHandler(myHandler);
+
         mWebView = (WebView) findViewById(R.id.webView);
 
 
@@ -97,7 +99,7 @@ public class MainActivity extends Activity {
         Intent intent = new Intent();
         intent.setAction("com.example.link.photo");
         sendBroadcast(intent);
-        myHandler.sendEmptyMessage(MSG_UPLOAD_PICTURE);
+
     }
 
     private void doBindService() {
@@ -117,6 +119,8 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         doUnbindService();
+
+        myHandler = null;
     }
 
     @Override
@@ -190,7 +194,7 @@ public class MainActivity extends Activity {
                     oauthThread = null;
                     break;
                 case MSG_UPLOAD_PICTURE:
-                    UploadThread uploadThread = new UploadThread(mData);
+                    UploadThread uploadThread = new UploadThread(mData, msg.obj.toString());
                     uploadThread.start();
                     break;
                 default:

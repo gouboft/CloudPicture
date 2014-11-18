@@ -3,6 +3,7 @@ package com.example.link.photo;
 import android.util.Base64;
 import android.util.Log;
 
+import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +27,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class Tools {
     private static final String TAG = "Tools";
+    private boolean DEBUG = false;
 
     public String loadUrl(String httpUrl) {
         String resultData = "";
@@ -44,9 +46,9 @@ public class Tools {
 
                 //得到读取的内容(流)
                 assert urlConn != null;
-                InputStreamReader response = null;
-                if (urlConn.getResponseCode() != 200) {
-                    Log.d(TAG, "Http Connection Error, Error Code: " + urlConn.getResponseCode());
+                InputStreamReader response;
+                if (urlConn.getResponseCode() != HttpStatus.SC_OK) {
+                    Log.e(TAG, "Http Connection Error, Error Code: " + urlConn.getResponseCode());
                     response = new InputStreamReader(urlConn.getErrorStream());
                 } else
                     response = new InputStreamReader(urlConn.getInputStream());
@@ -62,9 +64,9 @@ public class Tools {
                 }
 
                 if ( !resultData.equals("")) {
-                    Log.d(TAG, "resultData: " + resultData);
+                    if(DEBUG) Log.d(TAG, "resultData: " + resultData);
                 } else {
-                    Log.d(TAG, "resultDate is null");
+                    Log.e(TAG, "resultDate is null");
                 }
                 //关闭InputStreamReader
                 response.close();
@@ -99,13 +101,13 @@ public class Tools {
     public String BaseString(String httpMtd, String baseUrl, String extendUrl) {
         String baseURLEncode = null;
         String extendUrlEncode = null;
-        Log.d(TAG, "baseUrl: " + baseUrl);
-        Log.d(TAG, "extendUrl: " + extendUrl);
+        if(DEBUG) Log.d(TAG, "baseUrl: " + baseUrl);
+        if(DEBUG) Log.d(TAG, "extendUrl: " + extendUrl);
         try {
             baseURLEncode = URLEncoder.encode(baseUrl, "UTF-8");
             extendUrlEncode = URLEncoder.encode(extendUrl, "UTF-8");
-            Log.d(TAG, "baseUrlEncode: " + baseURLEncode);
-            Log.d(TAG, "extendUrlEncode: " + extendUrlEncode);
+            if(DEBUG) Log.d(TAG, "baseUrlEncode: " + baseURLEncode);
+            if(DEBUG) Log.d(TAG, "extendUrlEncode: " + extendUrlEncode);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -114,7 +116,7 @@ public class Tools {
     }
 
     public String SignatureUrl(String baseString, String secretKey) {
-        Log.d(TAG, "secretKey: " + secretKey);
+        if(DEBUG) Log.d(TAG, "secretKey: " + secretKey);
         String signatureEncode = null;
         try {
             SecretKeySpec secret = new SecretKeySpec(secretKey.getBytes("UTF-8"), "HmacSHA1");
@@ -122,11 +124,11 @@ public class Tools {
             mac.init(secret);
             byte[] digest = mac.doFinal(baseString.getBytes("UTF-8"));
             String result = Base64.encodeToString(digest, Base64.DEFAULT);
-            Log.d(TAG, "Base64 result: " + result);
+            if(DEBUG) Log.d(TAG, "Base64 result: " + result);
 
             //We would be REMOVE the last char in result
             signatureEncode = URLEncoder.encode(result.substring(0, result.length() - 1), "UTF-8");
-            Log.d(TAG, "Base64 result Encode: " + signatureEncode);
+            if(DEBUG) Log.d(TAG, "Base64 result Encode: " + signatureEncode);
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();

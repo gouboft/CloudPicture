@@ -35,32 +35,33 @@ public class UploadThread extends Thread {
     private String uploadLocate = "http://api-content.dfs.kuaipan.cn/1/fileops/upload_locate";
     private String createFolder = "http://openapi.kuaipan.cn/1/fileops/create_folder";
     private Tools mTools;
+    private String uploadFilePath;
 
-    public UploadThread(DataSave data) {
+    public UploadThread(DataSave data, String filePath) {
         mData = data;
         oauthToken = mData.GetOauthToken();
         oauthTokenSecret = mData.GetOauthTokenSecret();
         mTools = new Tools();
+        uploadFilePath = filePath;
     }
 
     @Override
     public void run() {
         super.run();
-        String fileName = "ok.jpg";
-        String filePath = Environment.getExternalStorageDirectory().getPath() + "/";
+        File uploadFile = new File(uploadFilePath);
+        String fileName = uploadFile.getName();
+        String filePath = uploadFile.getAbsolutePath();
         //Part 1: Get upload_locate url
         oauthTokenSecret = mData.customSecretKey + mData.GetOauthTokenSecret();
 
         String oauthPara = mTools.GetOauthPara(oauthToken);
         String baseString = mTools.BaseString("GET&", uploadLocate, oauthPara);
-        Log.d(TAG, "baseString: "+ baseString);
         String urlSignature = mTools.SignatureUrl(baseString, oauthTokenSecret);
         String finalUrl = uploadLocate + "?" + oauthPara + "&" + "oauth_signature=" + urlSignature;
 
         String response = mTools.loadUrl(finalUrl);
-
         String uploadUrl = mTools.handleResponse(response, "url") + "1/fileops/upload_file";
-        Log.d(TAG, "Get uploadUrl: " + uploadUrl);
+        Log.i(TAG, "Get uploadUrl: " + uploadUrl);
 
         //Part 2: Upload file
         oauthPara = mTools.GetOauthPara(oauthToken);
@@ -69,9 +70,9 @@ public class UploadThread extends Thread {
         baseString = mTools.BaseString("POST&", uploadUrl, oauthPara + extendPara);
         urlSignature = mTools.SignatureUrl(baseString, oauthTokenSecret);
         finalUrl = uploadUrl + "?" + oauthPara + "&oauth_signature=" + urlSignature + extendPara;
-        Log.d(TAG, "upload file Url: " + finalUrl);
+        Log.i(TAG, "upload file URL: " + finalUrl);
 
-        filePost(finalUrl, filePath + fileName);
+        filePost(finalUrl, uploadFilePath);
     }
 
     private String UploadExtendPara(String filePath) {
@@ -87,37 +88,27 @@ public class UploadThread extends Thread {
 
         File imageFile = new File(file);
 
-
-
-
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
         builder.setBoundary(boundary);
 
-        //ByteArrayBody bab = new ByteArrayBody(getBytesFromFile(imageFile), "ok.jpg");
-
         builder.addTextBody("name", "file");
         builder.addTextBody("filename", "ok.jpg");
-//        builder.addTextBody("fileType", "jpg");
         builder.addBinaryBody("file", imageFile);
 
         HttpEntity entity = builder.build();
 
         httppost.setEntity(entity);
 
-        HttpResponse httpResponse = null;
         try {
-            httpResponse = httpclient.execute(httppost);
+            HttpResponse httpResponse = httpclient.execute(httppost);
 
-            int statusCode = httpResponse.getStatusLine().getStatusCode();
+            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                Log.d(TAG, "Upload complete!");
+            }
 
             String response = EntityUtils.toString(httpResponse.getEntity(), HTTP.UTF_8);
-
             Log.d(TAG, "got response: " + response);
-
-            if (statusCode == HttpStatus.SC_OK) {
-                Log.d(TAG, "upload success");
-            }
         } catch (ClientProtocolException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -125,8 +116,6 @@ public class UploadThread extends Thread {
         } finally {
             httpclient.getConnectionManager().shutdown();
         }
-
-
     }
 
     public static byte[] getBytesFromFile(File file) {

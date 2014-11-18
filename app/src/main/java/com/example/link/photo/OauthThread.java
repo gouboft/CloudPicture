@@ -22,7 +22,7 @@ public class OauthThread extends Thread{
 
     private String tempOauth;
 
-    private String requestTokenUrl = "https://openapi.kuaipan.cn/open/requestToken";
+    private final String requestTokenUrl = "https://openapi.kuaipan.cn/open/requestToken";
     private String accessTokenUrl = "https://openapi.kuaipan.cn/open/accessToken";
 
     private DataSave mData;
@@ -60,8 +60,6 @@ public class OauthThread extends Thread{
             SecretKey = mData.customSecretKey + mData.GetTempOauthTokenSecret();
             String extendUrl = getExtendUrlString(tempOauth);
             String baseString = mTools.BaseString("GET&", accessTokenUrl, extendUrl);
-            Log.d(TAG, "SecretKey: " + SecretKey);
-            Log.d(TAG, "baseString: " + baseString);
             String urlSignature = mTools.SignatureUrl(baseString, SecretKey);
             String finalUrl = accessTokenUrl + "?" + extendUrl + "&" + "oauth_signature=" + urlSignature;
 
@@ -79,7 +77,6 @@ public class OauthThread extends Thread{
 
             if (isRequestToken) {
                 tempOauth = object.getString("oauth_token");
-                Log.d(TAG, "tempOauth: " + tempOauth);
                 mData.SetTempOauthToken(object.getString("oauth_token"));
                 mData.SetTempOauthTokenSecret(object.getString("oauth_token_secret"));
             } else {
@@ -114,6 +111,4 @@ public class OauthThread extends Thread{
         }
         return extendUrl;
     }
-
-
 }
