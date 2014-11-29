@@ -91,7 +91,6 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
         myApp.setHandler(myHandler);
 
         doBindService();
-
     }
 
 
@@ -103,14 +102,14 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
     public void click(View v) {
         int key = v.getId();
         switch (key) {
-            case R.id.button1:
-                //doBindService();
+            case R.id.take_pic:
                 TakePicture();
                 break;
-            case R.id.button2:
-                //doUnbindService();
-                if (serviceIntent != null)
-                    stopService(serviceIntent);
+            case R.id.bind:
+                doBindService();
+                break;
+            case R.id.unbind:
+                doUnbindService();
                 break;
             default:
                 break;
@@ -121,7 +120,6 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
         Intent intent = new Intent();
         intent.setAction("com.example.link.photo");
         sendBroadcast(intent);
-
     }
 
     private void doBindService() {

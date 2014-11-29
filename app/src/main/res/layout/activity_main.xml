@@ -4,18 +4,33 @@
     android:layout_height="match_parent" >
 
     <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:id="@+id/take_pic"
+        android:layout_width="300dip"
+        android:layout_height="200dip"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
         android:onClick="click"
-        android:text="@string/bind_service" />
+        android:text="@string/take_picture"
+        android:textStyle="bold"
+        android:textColor="#0000FF"
+        android:textSize="50dp"
+        android:background="#FF0000"/>
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/bind"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:onClick="click"
+        android:text="@string/bind_service"
+        tools:ignore="RtlHardcoded" />
+
+    <Button
+        android:id="@+id/unbind"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="50dp"
         android:onClick="click"
         android:text="@string/unbind_service"
         tools:ignore="RtlHardcoded" />
