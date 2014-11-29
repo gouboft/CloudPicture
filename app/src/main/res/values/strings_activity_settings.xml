@@ -1,0 +1,17 @@
+<resources>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_auto_take_enable">自动拍照</string>
+    <string name="pref_description_auto_take_pic">
+        打开后，将按照设置的拍照时间间隔自动进行拍照，并上传到金山快盘
+    </string>
+
+    <string name="pref_title_auto_take_pic_time_interval">自动拍照时间间隔</string>
+    <string name="pref_default_time">5</string>
+
+</resources>

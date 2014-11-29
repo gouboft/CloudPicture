@@ -40,7 +40,9 @@ public class UploadThread extends Thread {
     public UploadThread(DataSave data, String filePath) {
         mData = data;
         oauthToken = mData.GetOauthToken();
+        Log.d(TAG, "OauthToken: " + oauthToken);
         oauthTokenSecret = mData.GetOauthTokenSecret();
+        Log.d(TAG, "OauthTokenSecret: " + oauthTokenSecret);
         mTools = new Tools();
         uploadFilePath = filePath;
     }

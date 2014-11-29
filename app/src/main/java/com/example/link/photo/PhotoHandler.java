@@ -5,6 +5,7 @@ package com.example.link.photo;
  */
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.os.Environment;
@@ -18,15 +19,14 @@ import java.util.Date;
 
 public class PhotoHandler implements PictureCallback {
     private static final String TAG = "PhotoHandler";
-    private final Context context;
-    private MainActivity.MyHandler mHandler;
+    private DataSave mData;
 
     private final int MSG_UPLOAD_PICTURE = 10003;
 
-    public PhotoHandler(Context context) {
-        this.context = context;
-        MyApplication mApplication = (MyApplication) context.getApplicationContext();
-        mHandler = mApplication.getHandler();
+    public PhotoHandler(String token, String secret) {
+        mData = new DataSave();
+        mData.SetOauthToken(token);
+        mData.SetOauthTokenSecret(secret);
     }
 
     @Override
@@ -35,9 +35,6 @@ public class PhotoHandler implements PictureCallback {
         File pictureFileDir = getDir();
 
         if (!pictureFileDir.exists() && !pictureFileDir.mkdirs()) {
-
-            Toast.makeText(context, "Can't create directory to save image.",
-                    Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -58,7 +55,8 @@ public class PhotoHandler implements PictureCallback {
             e.printStackTrace();
         }
 
-        mHandler.obtainMessage(MSG_UPLOAD_PICTURE, filename).sendToTarget();
+        UploadThread uploadThread = new UploadThread(mData, filename);
+        uploadThread.start();
     }
 
     private File getDir() {

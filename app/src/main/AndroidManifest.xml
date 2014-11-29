@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.link.photo"
     android:versionCode="1"
@@ -14,14 +15,14 @@
     <uses-feature android:name="android.hardware.camera.any" />
 
     <application
+        android:name="com.example.link.photo.MyApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name="MyApplication" >
+        android:theme="@style/AppTheme" >
         <activity
             android:name="com.example.link.photo.MainActivity"
-            android:label="@string/app_name"
-            android:configChanges="orientation|keyboardHidden">
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,11 +30,22 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name="com.example.link.photo.PhotoService"
-            >
-
+        <service android:name="com.example.link.photo.PhotoService"
+            android:process=":remote">
+            <intent-filter>
+                <action android:name="com.example.link.photo.IPhotoService"/>
+            </intent-filter>
         </service>
+
+        <activity
+            android:name="com.example.link.photo.KuaiPanSettings"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/title_activity_kuai_pan_settings" >
+        </activity>
+        <activity
+            android:name="com.example.link.photo.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
     </application>
 
-</manifest>  
+</manifest>

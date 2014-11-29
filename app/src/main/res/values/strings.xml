@@ -1,12 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">网拍</string>
 
+    <string name="app_name">网拍</string>
     <string name="menu_settings">设置</string>
     <string name="title_activity_main">拍照上传网盘</string>
-
     <string name="local_service_started">服务正在运行中……</string>
     <string name="local_service_stopped">服务停止了……</string>
     <string name="local_service_label">正在测试中……</string>
     <string name="bind_service">拍照上传</string>
     <string name="unbind_service">关闭服务</string>
+    <string name="title_activity_kuai_pan_settings">KuaiPanSettings</string>
+    <string name="action_settings">设置</string>
+    <string name="action_kuai_pan_settings">快盘帐号设置</string>
+
 </resources>

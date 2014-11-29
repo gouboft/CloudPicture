@@ -1,5 +1,6 @@
 package com.example.link.photo;
 
+import android.os.Message;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -19,6 +20,8 @@ public class OauthThread extends Thread{
     private Tools mTools;
     private final int MSG_AUTHORIZE = 10000;
     private final int MSG_OAUTH_FINISH = 10002;
+    private final int MSG_SET_OAU_TKN = 10004;
+    private final int MSG_SET_OAU_TKN_SECRET = 10005;
 
     private String tempOauth;
 
@@ -34,7 +37,6 @@ public class OauthThread extends Thread{
         mHandler = handler;
         mData = data;
         mTools = new Tools();
-
     }
 
     @Override
@@ -81,8 +83,9 @@ public class OauthThread extends Thread{
                 mData.SetTempOauthTokenSecret(object.getString("oauth_token_secret"));
             } else {
                 mData.SetUserId(object.getString("user_id"));
-                mData.SetOauthToken(object.getString("oauth_token"));
-                mData.SetOauthTokenSecret(object.getString("oauth_token_secret"));
+
+                mHandler.obtainMessage(MSG_SET_OAU_TKN, object.getString("oauth_token")).sendToTarget();
+                mHandler.obtainMessage(MSG_SET_OAU_TKN_SECRET, object.getString("oauth_token_secret")).sendToTarget();
             }
         } catch (JSONException e) {
             e.printStackTrace();

@@ -13,6 +13,7 @@ import android.hardware.Camera;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.SurfaceView;
 
 import java.io.IOException;
@@ -23,6 +24,9 @@ public class PhotoService extends Service {
     private Camera mCamera;
     private boolean isRepeat = false;
     private int interval = 5; //second
+
+    private String Token;
+    private String Secret;
 
     private AlarmManager am = null;
     private NotificationManager mNM;
@@ -43,11 +47,6 @@ public class PhotoService extends Service {
         showNotification();
 
         mCamera = openCamera();
-
-        if (isRepeat)
-            initRepeat();
-        else
-            initSingle();
     }
 
     private Camera openCamera() {
@@ -56,12 +55,17 @@ public class PhotoService extends Service {
     }
 
     private void initSingle() {
+        if (am != null)
+            cancelAlertManager();
+
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.example.link.photo");
         registerReceiver(alarmReceiver, filter);
     }
 
-    private void initRepeat() {
+    private void initRepeat(int interval) {
+        if (am != null)
+            cancelAlertManager();
         am = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         IntentFilter filter = new IntentFilter();
@@ -72,7 +76,6 @@ public class PhotoService extends Service {
         intent.setAction("com.vegetables_source.alarm");
         PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, 0);
 
-        // 马上开始，每5秒触发一次
         am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * interval, pi);
     }
 
@@ -103,7 +106,28 @@ public class PhotoService extends Service {
 
     IPhotoService.Stub mBinder = new IPhotoService.Stub() {
         @Override
-        public void TakePicture() throws RemoteException {
+        public void SetTimeInterval(int second) throws RemoteException {
+            interval = second;
+            if (isRepeat)
+                initRepeat(interval);
+            else
+                initSingle();
+        }
+
+        @Override
+        public void SetRepeat(boolean repeat) throws RemoteException {
+            isRepeat = repeat;
+            if (isRepeat)
+                initRepeat(interval);
+            else
+                initSingle();
+        }
+
+        @Override
+        public void SetToken(String token, String secret) throws RemoteException {
+            Token = token;
+            Secret = secret;
+            Log.d(TAG, "mData Secret: " + Token + " " + Secret);
         }
     };
 
@@ -147,8 +171,7 @@ public class PhotoService extends Service {
 
                     mCamera.startPreview();
 
-                    mCamera.takePicture(null, null, new PhotoHandler(
-                            getApplicationContext()));
+                    mCamera.takePicture(null, null, new PhotoHandler(Token, Secret));
                 }
             }
         }

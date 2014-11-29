@@ -8,6 +8,7 @@ import com.example.link.photo.MainActivity.MyHandler;
  */
 public class MyApplication extends Application {
     private MyHandler mHandler;
+    private DataSave mData;
 
     public void setHandler(MyHandler handler) {
         mHandler = handler;
@@ -15,5 +16,10 @@ public class MyApplication extends Application {
 
     public MyHandler getHandler() {
         return mHandler;
+    }
+    public DataSave getData() {
+        if (mData == null)
+            mData = new DataSave();
+        return mData;
     }
 }

@@ -27,7 +27,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class Tools {
     private static final String TAG = "Tools";
-    private boolean DEBUG = false;
+    private boolean DEBUG = true;
 
     public String loadUrl(String httpUrl) {
         String resultData = "";
@@ -72,8 +72,6 @@ public class Tools {
                 response.close();
                 //关闭http连接
                 urlConn.disconnect();
-                //设置显示取得的内容
-
             } catch (IOException e) {
                 e.printStackTrace();
             }

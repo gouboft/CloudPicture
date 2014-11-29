@@ -8,6 +8,8 @@ interface IPhotoService {
      * Demonstrates some basic types that you can use as parameters
      * and return values in AIDL.
      */
-    void TakePicture();
+    void SetTimeInterval(int second);
+    void SetRepeat(boolean isRepeat);
+    void SetToken(String token, String secret);
 
 }
